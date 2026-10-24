@@ -2,38 +2,39 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f3f5f2">
+<meta name="theme-color" content="#f7f5f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>One Week at a Time</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Karla:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
-/* Layout: a ruled notebook. Week = seven ruled day blocks (one column on phones), Month = grid, Day = one ruled page.
-   Category = a soft highlighter stroke behind the text. */
+/* Layout: Week = a row of day boxes (past days shrink to strips; scrolls sideways on phones), Month = grid, Day = one page.
+   Bold grotesk type, ink on warm grey, red for today, pastel highlights for categories. */
 :root{
-  --bg:#f3f5f2; --surface:#ffffff; --sunk:#e8ece8; --fg:#1f2a26; --muted:#6a7872; --faint:#a9b4af; --rule:#d6ddd8;
-  --accent:#2f6f5e; --accent-soft:#e1eee8; --today:#c9762f; --today-soft:#f6e7d8;
-  --hl-goal:#e4dcf2; --hl-must:#f6d9d2; --hl-job:#f5d8e6; --hl-side:#f3e7b8; --hl-prac:#d5ebe2; --hl-study:#d6e5f3;
-  --display:"Fraunces",Georgia,serif; --body:"Karla",system-ui,sans-serif;
+  --bg:#f7f5f8; --surface:#f8f7f4; --sunk:#e7dee7; --seg:#eae5ea; --fg:#141414; --muted:#6d6b66; --faint:#a9a6a0; --rule:#d3d0c9;
+  --accent:#141414; --accent-soft:#dcdad4; --today:#be509b; --today-line:#db87c0; --today-border:#eca3d9; --today-soft:#f6dcef;
+  --hl-goal:#dcd5fb; --hl-must:#f2cfd5; --hl-job:#bde9f0; --hl-side:#f8ec97; --hl-prac:#c3f0d6; --hl-study:#c7e2fa; --hl-peach:#fbd6bd;
+  --display:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif; --body:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#151b19; --surface:#222b28; --sunk:#1b2220; --fg:#e7ece9; --muted:#9aa8a2; --faint:#5d6a65; --rule:#2c3632;
-  --accent:#7fc4ae; --accent-soft:#233630; --today:#e7a466; --today-soft:#3a2c1f;
-  --hl-goal:#3b3350; --hl-must:#4d2f29; --hl-job:#4a2c3b; --hl-side:#463d1f; --hl-prac:#24402f; --hl-study:#243a50; color-scheme:dark}}
+  --bg:#141413; --surface:#22221f; --sunk:#1c1c1a; --seg:#1c1c1a; --fg:#efeee9; --muted:#a3a19b; --faint:#64625d; --rule:#33322e;
+  --accent:#efeee9; --accent-soft:#2c2b28; --today:#ee8acb; --today-line:#b9659f; --today-border:#8a4a78; --today-soft:#3a1f33;
+  --hl-goal:#3a3358; --hl-must:#4f2a31; --hl-job:#1f4750; --hl-side:#4b4419; --hl-prac:#1f4a33; --hl-study:#21405a; --hl-peach:#4e3122; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#151b19; --surface:#222b28; --sunk:#1b2220; --fg:#e7ece9; --muted:#9aa8a2; --faint:#5d6a65; --rule:#2c3632;
-  --accent:#7fc4ae; --accent-soft:#233630; --today:#e7a466; --today-soft:#3a2c1f;
-  --hl-goal:#3b3350; --hl-must:#4d2f29; --hl-job:#4a2c3b; --hl-side:#463d1f; --hl-prac:#24402f; --hl-study:#243a50; color-scheme:dark}
+  --bg:#141413; --surface:#22221f; --sunk:#1c1c1a; --seg:#1c1c1a; --fg:#efeee9; --muted:#a3a19b; --faint:#64625d; --rule:#33322e;
+  --accent:#efeee9; --accent-soft:#2c2b28; --today:#ee8acb; --today-line:#b9659f; --today-border:#8a4a78; --today-soft:#3a1f33;
+  --hl-goal:#3a3358; --hl-must:#4f2a31; --hl-job:#1f4750; --hl-side:#4b4419; --hl-prac:#1f4a33; --hl-study:#21405a; --hl-peach:#4e3122; color-scheme:dark}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
 [hidden]{display:none!important}
 .wrap{max-width:1240px;margin:0 auto;padding-block:max(20px,env(safe-area-inset-top,0px)) 70px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
 .narrow{max-width:680px;width:100%}
-h1,h2{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance}
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.025em;margin:0;text-wrap:balance}
 h1{font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.1}
 h2{font-size:1.3rem}
 h3{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:700}
 section{display:grid;gap:12px;min-width:0}
+main{min-width:0;display:grid;gap:16px}
 ul{list-style:none;margin:0;padding:0}
 button,select{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--rule);background:var(--surface);color:var(--fg);padding:6px 10px;font-size:.85rem}
 button:hover{border-color:var(--accent)}
@@ -46,11 +47,11 @@ button.link{border:none;background:none;padding:0;color:var(--accent);text-decor
 .titlebox{display:grid;gap:2px}
 .rel{font-size:.78rem;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.seg{display:flex;gap:2px;background:var(--sunk);padding:3px;border-radius:10px}
+.seg{display:flex;gap:2px;background:var(--seg);padding:3px;border-radius:10px}
 .seg button{border:none;background:transparent;padding:6px 12px;font-weight:700;color:var(--muted)}
 .seg button[aria-pressed=true]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .round{width:38px;height:38px;padding:0;border-radius:50%;font-size:1.1rem;background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.round:hover{background:var(--accent);border-color:var(--accent)}
+.round:hover{opacity:.8}
 .meta{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
 .sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .dotline{display:inline-flex;align-items:center;gap:6px}
@@ -63,7 +64,7 @@ details.goals summary::-webkit-details-marker{display:none}
 details.goals summary::after{content:"▾";font-size:.75rem}
 details.goals[open] summary::after{content:"▴"}
 details.goals ul{margin-top:8px;display:grid;gap:4px}
-.goals li{font-family:var(--display);font-size:1.05rem;color:var(--fg);display:flex;gap:8px;align-items:baseline}
+.goals li{font-weight:600;font-size:1rem;color:var(--fg);display:flex;gap:8px;align-items:baseline}
 .goals li::before{content:"→";color:var(--accent);font-family:var(--body)}
 .notice{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.9rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .notice span{flex:1 1 200px}
@@ -76,7 +77,20 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .hl{padding:2px 7px;border-radius:6px;box-decoration-break:clone;-webkit-box-decoration-break:clone;line-height:1.7}
 .hl[data-c=goal]{background:var(--hl-goal)}.hl[data-c=must]{background:var(--hl-must)}.hl[data-c=job]{background:var(--hl-job)}
 .hl[data-c=side]{background:var(--hl-side)}.hl[data-c=prac]{background:var(--hl-prac)}.hl[data-c=study]{background:var(--hl-study)}
+.hl[data-c=peach]{background:var(--hl-peach)}.hl[data-c=ink]{background:var(--fg);color:var(--bg)}
 .hl[data-c=plain]{padding-left:0}
+.cdot{width:14px;height:14px;flex:none;padding:0;border-radius:50%;border:1.5px solid transparent;cursor:pointer}
+.cdot[data-c=plain]{border-color:var(--faint);background:transparent}
+.cdot:hover{transform:scale(1.2)}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;padding:8px 2px 10px;border-bottom:1px solid var(--rule)}
+.swatch{width:26px;height:26px;padding:0;border-radius:50%;border:2px solid transparent}
+.swatch[data-c=plain]{border:1.5px dashed var(--faint);background:transparent}
+.swatch[aria-pressed=true]{outline:2px solid var(--fg);outline-offset:2px}
+[data-c=goal].cdot,[data-c=goal].swatch{background:var(--hl-goal)}[data-c=must].cdot,[data-c=must].swatch{background:var(--hl-must)}
+[data-c=job].cdot,[data-c=job].swatch{background:var(--hl-job)}[data-c=side].cdot,[data-c=side].swatch{background:var(--hl-side)}
+[data-c=prac].cdot,[data-c=prac].swatch{background:var(--hl-prac)}[data-c=study].cdot,[data-c=study].swatch{background:var(--hl-study)}
+[data-c=peach].cdot,[data-c=peach].swatch{background:var(--hl-peach)}[data-c=ink].cdot,[data-c=ink].swatch{background:var(--fg)}
+.foot{display:grid;gap:8px;border-top:1px solid var(--rule);padding-top:16px;font-size:.85rem;color:var(--muted)}
 .star{color:var(--today);margin-right:4px}
 .row.done .rt{color:var(--faint);text-decoration:line-through}
 .row.done .hl{background:transparent}
@@ -96,27 +110,34 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .chips button[aria-pressed=true]{border-color:var(--fg);border-width:1.5px;font-weight:700}
 .chips .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
 
-/* Week view */
-.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:18px 14px}
-@media (max-width:1200px){.week{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.week .row .rt,.week .addline input{font-size:.9rem}
-.week .chk{width:20px;height:20px}
-@media (max-width:720px){.week{grid-template-columns:minmax(0,1fr);gap:22px}}
-.dayblk{display:flex;flex-direction:column;min-width:0;border-radius:10px;border:2px solid transparent;padding:2px 4px 6px;margin:-4px}
-.dhead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--fg);padding:0 2px 6px;cursor:pointer}
-.dnum{font-family:var(--display);font-size:1.35rem;font-weight:600;font-variant-numeric:tabular-nums}
-.dwk{font-size:.85rem;color:var(--faint);font-weight:700}
-.dayblk.today .dhead{border-color:var(--today)}
-.dayblk.today .dnum{color:var(--today)}
-.dayblk.past .rows,.dayblk.past .dnum{opacity:.55}
-.dayblk.collapsed .rows{display:none}
-.pastline{display:flex;gap:10px;align-items:baseline;padding:8px 2px;border-bottom:1px solid var(--rule);color:var(--muted);font-size:.85rem;cursor:pointer}
-.pastline b{font-family:var(--display);font-size:1rem;color:var(--faint)}
-.pastline .sp{flex:1}
-.over{border-color:var(--accent)!important;background:var(--accent-soft)}
-.anyblk{display:grid;gap:8px;border-radius:10px;border:2px solid transparent;padding:4px;margin:-6px}
+/* Week view: day boxes */
+.board{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.colm{flex:1 0 160px;min-width:160px;background:var(--sunk);border-radius:14px;padding:12px 10px 8px;display:flex;flex-direction:column;gap:4px;min-height:300px;border:2px solid transparent;box-sizing:border-box}
+.colm.today{background:var(--surface);border-color:var(--today-border)}
+.colm.dim{opacity:.6}
+.colm.mini{flex:0 0 48px;min-width:48px;padding:12px 4px;align-items:center;cursor:pointer;opacity:.55}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:4px;padding:0 2px 7px;border-bottom:2px solid var(--fg);cursor:pointer}
+.dnum{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.dwk{font-size:.85rem;color:var(--faint);font-weight:600}
+.colm.today .chead{border-color:var(--today-line)}
+.colm.today .dnum,.colm.today .dwk{color:var(--today)}
+.colm.mini .chead{flex-direction:column-reverse;align-items:center;border:none;padding:0;gap:0}
+.colm.mini .dnum{font-size:1.05rem}
+.dots{display:flex;flex-direction:column;gap:5px;align-items:center;margin-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--muted)}
+.dot.d{background:var(--muted)}
+.colm .row{min-height:38px;padding:0}
+.colm .row .rt{font-size:.9rem}
+.colm .chk{width:20px;height:20px}
+.colm .cdot{width:10px;height:10px}
+.colm .row{gap:5px}
+.colm .addline{border-bottom:none}
+.colm .addline input{padding-left:2px;font-size:.88rem}
+.over{border-color:var(--fg)!important;border-style:dashed!important}
+.anyblk{display:grid;gap:8px;border-radius:14px;border:2px dashed var(--rule);padding:12px 14px}
 .anycols{columns:3 240px;column-gap:18px}
 .anycols .row,.anycols .addline{break-inside:avoid}
+.pastline{display:none}
 
 /* Month view */
 .mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:2px solid var(--fg)}
@@ -130,6 +151,7 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .mchip{font-size:.72rem;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:4px;padding:1px 4px}
 .mchip.done{text-decoration:line-through;color:var(--faint);background:transparent!important}
 .mchip[data-c=goal]{background:var(--hl-goal)}.mchip[data-c=must]{background:var(--hl-must)}.mchip[data-c=job]{background:var(--hl-job)}
+.mchip[data-c=peach]{background:var(--hl-peach)}.mchip[data-c=ink]{background:var(--fg);color:var(--bg)}
 .mchip[data-c=side]{background:var(--hl-side)}.mchip[data-c=prac]{background:var(--hl-prac)}.mchip[data-c=study]{background:var(--hl-study)}
 .mmore{font-size:.7rem;color:var(--muted)}
 @media (max-width:560px){.mcell{min-height:78px;padding:3px 2px}.mchip{font-size:.62rem;padding:0 2px}}
@@ -171,32 +193,35 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
     </div>
   </div>
   <div class="meta">
-    <details class="goals" id="goalBox"><summary id="goalSum">My goals</summary><ul id="goalList"></ul></details>
-    <div class="sync" id="sync"></div>
+    <details class="goals" id="goalBox"><summary id="goalSum">⭐ Where this is going</summary><ul id="goalList"></ul></details>
   </div>
   <div id="noticeArea"></div>
 
   <main id="view"></main>
 
   <section class="dumpblk narrow" data-drop="dump" aria-labelledby="bd">
-    <div class="rtop"><h2 id="bd">Brain dump</h2><span class="hint" id="bdCount"></span></div>
+    <div class="rtop"><h2 id="bd">🧠 Brain dump</h2><span class="hint" id="bdCount"></span></div>
     <p class="hint">Everything that isn't on a day yet. Drag it onto a day when you're ready.</p>
     <ul class="rows" id="dumpList"></ul>
   </section>
 
   <section class="rhythm narrow" aria-labelledby="rh">
-    <div class="rtop"><h2 id="rh">Practices &amp; studies</h2></div>
+    <div class="rtop"><h2 id="rh">🌿 Practices &amp; studies</h2></div>
     <p class="hint">Tap a day when you did it. No target, just a record.</p>
     <ul id="rhythmList"></ul>
     <form class="signin" id="rForm"><input id="rNew" placeholder="Add a practice or study…" autocomplete="off" aria-label="New practice"><select id="rCat" aria-label="Type"><option value="prac">Practice</option><option value="study">Study</option></select><button type="submit">Add</button></form>
   </section>
+
+  <footer class="foot narrow"><div class="sync" id="sync"></div></footer>
 </div>
 
 <script>
 const KEY="one-week-planner-v2", VKEY="one-week-planner-view";
 const CAT={plain:"Plain",must:"Must-do",goal:"Goal work",job:"Jobs",side:"Side project",study:"Study",prac:"Practice"};
-const TASKCATS=["plain","must","goal","job","side","study"];
+const COLORS=[["plain","No color"],["goal","Lavender"],["must","Rose"],["peach","Peach"],["side","Lemon"],["prac","Mint"],["job","Aqua"],["study","Sky"],["ink","Ink"]];
 const DN=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const EMO=["🌱","✏️","🌤️","📚","🎈","🌸","☕"];
+const MEMO=["⛄","💌","🌷","🌧️","🌼","☀️","🍉","🌻","🍎","🍂","🍁","❄️"];
 const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
 const addDays=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
@@ -227,7 +252,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let view="week"; try{view=localStorage.getItem(VKEY)||"week"}catch(e){}
 let sel=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-let menuId=null, openPast=new Set();
+let menuId=null, colorOpen=null, openPast=new Set();
 
 /* ---------- Sync: this device first, then your Supabase database when signed in ---------- */
 // Paste your two values from Supabase → Project Settings → API.
@@ -290,15 +315,20 @@ function rowHTML(t,kind){
   const f=state.focus===t.id&&kind==="week", c=t.c||"plain", open=menuId===kind+t.id;
   return `<li class="row ${t.done?"done":""}" data-drag="${kind}" data-id="${t.id}">
     <span class="grip" aria-hidden="true">⠿</span>
+    <button class="cdot" data-c="${c}" data-a="colors" data-k="${kind}" data-id="${t.id}" aria-label="Pick a color"></button>
     <button class="rt" data-a="menu" data-k="${kind}" data-id="${t.id}">${f?'<span class="star">★</span>':""}<span class="hl" data-c="${c}">${esc(t.text)}</span></button>
     ${kind==="week"?`<button class="chk" data-a="check" data-id="${t.id}" aria-label="${t.done?"Mark not done":"Mark done"}">✓</button>`:""}
-  </li>${open?menuHTML(t,kind):""}`;
+  </li>${colorOpen===kind+t.id?swatchHTML(t,kind):""}${open?menuHTML(t,kind):""}`;
+}
+function swatchHTML(t,kind){
+  const c=t.c||"plain";
+  return `<li class="swatches">${COLORS.map(([k,n])=>`<button class="swatch" data-c="${k}" data-a="cat" data-k="${kind}" data-id="${t.id}" aria-pressed="${c===k}" title="${n}" aria-label="${n}"></button>`).join("")}</li>`;
 }
 function menuHTML(t,kind){
   const c=t.c||"plain";
   return `<li class="menu">
     <input id="edit-${kind}-${t.id}" data-edit="${kind}" data-id="${t.id}" value="${esc(t.text)}" aria-label="Edit task">
-    <div class="chips">${TASKCATS.map(k=>`<button data-a="cat" data-k="${kind}" data-id="${t.id}" data-c="${k}" aria-pressed="${c===k}"><span class="sw hl" data-c="${k}" style="padding:0"></span>${CAT[k]}</button>`).join("")}</div>
+    <div class="swatches" style="border:none;padding:0">${COLORS.map(([k,n])=>`<button class="swatch" data-c="${k}" data-a="cat" data-k="${kind}" data-id="${t.id}" aria-pressed="${c===k}" title="${n}" aria-label="${n}"></button>`).join("")}</div>
     <div class="chips">${kind==="week"?`
       <button data-a="focus" data-id="${t.id}">${state.focus===t.id?"Remove focus":"★ Make it the focus"}</button>
       ${t.day!==null?`<button data-a="anyday" data-id="${t.id}">Any day this week</button>`:""}
@@ -314,28 +344,29 @@ const fillers=n=>Array.from({length:Math.max(0,n)},()=>`<li class="row filler"><
 
 /* ---------- Views ---------- */
 function weekView(){
-  const mon=mondayOf(sel), K=ymd(mon), map=byDate(), phone=matchMedia("(max-width:720px)").matches;
-  let h=`<div class="week">`;
+  const mon=mondayOf(sel), K=ymd(mon), map=byDate(), cur=K===CUR;
+  let h=`<div class="board" id="board">`;
   for(let i=0;i<7;i++){
     const dt=addDays(mon,i), d=ymd(dt), ts=map[d]||[], past=isPast(d), today=d===TODAY;
-    const collapsed=past&&K===CUR&&!openPast.has(d);
-    if(collapsed){
-      h+=`<div class="dayblk past"><div class="pastline" data-a="togglePast" data-d="${d}"><b>${dt.getDate()} ${dt.toLocaleDateString(undefined,{month:"short"})}</b><span>${DN[i]}</span><span class="sp"></span><span>${ts.length?`${ts.filter(t=>t.done).length} of ${ts.length} done`:"Nothing planned"}</span></div></div>`;
+    if(past&&cur&&!openPast.has(d)){
+      h+=`<div class="colm mini" data-a="togglePast" data-d="${d}" title="Show ${DN[i]} ${dt.getDate()}"><div class="chead"><span class="dwk">${EMO[i]}</span><span class="dnum">${dt.getDate()}</span></div>
+        <div class="dots">${ts.map(t=>`<span class="dot ${t.done?"d":""}"></span>`).join("")}</div></div>`;
       continue;
     }
-    h+=`<div class="dayblk ${past?"past":""} ${today?"today":""}" ${past?"":`data-drop="date:${d}"`}>
-      <div class="dhead" data-a="${past&&K===CUR?"togglePast":"goDay"}" data-d="${d}"><span class="dnum">${dt.getDate()} ${dt.toLocaleDateString(undefined,{month:"short"})}</span><span class="dwk">${today?"Today":DN[i]}</span></div>
-      <ul class="rows">${ts.map(t=>rowHTML(t,"week")).join("")}${past?"":addLine("date:"+d,"")}${phone?"":fillers(6-ts.length-(past?0:1))}</ul>
+    h+=`<div class="colm ${past?"dim":""} ${today?"today":""}" ${past?"":`data-drop="date:${d}"`}>
+      <div class="chead" data-a="${past&&cur?"togglePast":"goDay"}" data-d="${d}"><span class="dnum">${dt.getDate()} ${dt.toLocaleDateString(undefined,{month:"short"})}</span><span class="dwk">${EMO[i]} ${today?"Today":DN[i]}</span></div>
+      <ul class="rows">${ts.map(t=>rowHTML(t,"week")).join("")}${past?"":addLine("date:"+d,"+ Add")}</ul>
     </div>`;
   }
   h+=`</div>`;
   const anyT=state.week.filter(t=>t.wk===K&&t.day===null);
-  h+=`<section class="anyblk" data-drop="any:${K}"><h3>Any day this week</h3><ul class="rows anycols">${anyT.map(t=>rowHTML(t,"week")).join("")}${addLine("any:"+K,"Add something for this week…")}</ul></section>`;
+  h+=`<section class="anyblk" data-drop="any:${K}"><h3>✨ Any day this week</h3><ul class="rows anycols">${anyT.map(t=>rowHTML(t,"week")).join("")}${addLine("any:"+K,"+ Add something for this week")}</ul></section>`;
   return h;
 }
+function scrollToday(){requestAnimationFrame(()=>{const b=document.getElementById("board");if(!b)return;const t=b.querySelector(".today");b.scrollLeft=t?Math.max(0,t.offsetLeft-b.offsetLeft-60):0})}
 function monthView(){
   const first=new Date(sel.getFullYear(),sel.getMonth(),1), start=mondayOf(first), map=byDate();
-  let h=`<div class="mgrid">${DN.map(d=>`<div class="mwd">${d}</div>`).join("")}`;
+  let h=`<div class="mgrid">${DN.map((d,i)=>`<div class="mwd">${EMO[i]} ${d}</div>`).join("")}`;
   for(let i=0;i<42;i++){
     const dt=addDays(start,i);if(i>=35&&dt.getMonth()!==first.getMonth())break;
     const d=ymd(dt), ts=map[d]||[], out=dt.getMonth()!==first.getMonth();
@@ -351,7 +382,7 @@ function dayView(){
   const anyT=state.week.filter(t=>t.wk===K&&t.day===null);
   return `<div class="dayview narrow">
     <div class="dayblk ${past?"past":""}" ${past?"":`data-drop="date:${d}"`}><ul class="rows">${ts.map(t=>rowHTML(t,"week")).join("")}${past?"":addLine("date:"+d,"Add a task for this day…")}${fillers(5-ts.length)}</ul></div>
-    <section class="anyblk" data-drop="any:${K}"><h3>Any day this week</h3><ul class="rows">${anyT.map(t=>rowHTML(t,"week")).join("")}${addLine("any:"+K,"Add something for this week…")}</ul></section>
+    <section class="anyblk" data-drop="any:${K}"><h3>✨ Any day this week</h3><ul class="rows">${anyT.map(t=>rowHTML(t,"week")).join("")}${addLine("any:"+K,"Add something for this week…")}</ul></section>
   </div>`;
 }
 
@@ -369,10 +400,11 @@ function render(){
     $("rel").textContent=sel.getFullYear()===now.getFullYear()&&sel.getMonth()===now.getMonth()?"This month":String(sel.getFullYear());
     $("title").textContent=sel.toLocaleDateString(undefined,{month:"long",year:"numeric"});
   }else{
-    const d=ymd(sel);$("rel").textContent=d===TODAY?"Today":isPast(d)?"Past":DN[idxOf(sel)];
+    const d=ymd(sel);$("rel").textContent=EMO[idxOf(sel)]+" "+(d===TODAY?"Today":isPast(d)?"Past":DN[idxOf(sel)]);
     $("title").textContent=sel.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"});
   }
-  $("goalSum").textContent=`My goals (${state.goals.length})`;
+  {const md=view==="week"?addDays(mondayOf(sel),3):sel;$("title").textContent+=" "+MEMO[md.getMonth()];}
+  $("goalSum").textContent=`⭐ Where this is going (${state.goals.length})`;
   $("goalList").innerHTML=state.goals.map(g=>`<li><span>${esc(g.text)}</span><button class="x" data-a="delGoal" data-id="${g.id}" aria-label="Remove goal">✕</button></li>`).join("")
     +`<li style="display:block"><form class="signin" id="gForm"><input id="gNew" placeholder="Add a goal…" autocomplete="off" aria-label="New goal"><button type="submit">Add</button></form></li>`;
   const stale=state.week.filter(t=>t.wk<CUR&&!t.done&&!t.kept);
@@ -417,18 +449,19 @@ document.addEventListener("click",e=>{
   if(suppressClick){suppressClick=false;return}
   const b=e.target.closest("[data-a]");if(!b)return;
   const id=+b.dataset.id, a=b.dataset.a;
-  if(a==="view"){view=b.dataset.v;try{localStorage.setItem(VKEY,view)}catch(_){}menuId=null;render();return}
-  if(a==="today"){sel=new Date(now.getFullYear(),now.getMonth(),now.getDate());render();return}
-  if(a==="prev"||a==="next"){const s=a==="next"?1:-1;sel=view==="month"?new Date(sel.getFullYear(),sel.getMonth()+s,1):addDays(sel,view==="week"?7*s:s);menuId=null;render();return}
+  if(a==="view"){view=b.dataset.v;try{localStorage.setItem(VKEY,view)}catch(_){}menuId=null;render();scrollToday();return}
+  if(a==="today"){sel=new Date(now.getFullYear(),now.getMonth(),now.getDate());render();scrollToday();return}
+  if(a==="prev"||a==="next"){const s=a==="next"?1:-1;sel=view==="month"?new Date(sel.getFullYear(),sel.getMonth()+s,1):addDays(sel,view==="week"?7*s:s);menuId=null;render();scrollToday();return}
   if(a==="goDay"){if(e.target.closest(".mchip")&&false)return;sel=parse(b.dataset.d);view="day";menuId=null;render();scrollTo({top:0});return}
   if(a==="togglePast"){const d=b.dataset.d;openPast.has(d)?openPast.delete(d):openPast.add(d);render();return}
-  if(a==="menu"){const k=b.dataset.k+id;menuId=menuId===k?null:k;render();return}
+  if(a==="menu"){const k=b.dataset.k+id;menuId=menuId===k?null:k;colorOpen=null;render();return}
+  if(a==="colors"){const k=b.dataset.k+id;colorOpen=colorOpen===k?null:k;menuId=null;render();return}
   if(a==="close"){menuId=null;render();return}
   if(a==="up")return place("dump",id,"any:"+(view==="month"?CUR:wkOf(sel)));
   if(a==="back")return place("week",id,"dump");
   if(a==="anyday"){const t=find("week",id);t.day=null;menuId=null}
   else if(a==="check"){const t=find("week",id);t.done=!t.done;if(t.done&&state.focus===id)state.focus=null}
-  else if(a==="cat"){find(b.dataset.k,id).c=b.dataset.c}
+  else if(a==="cat"){find(b.dataset.k,id).c=b.dataset.c;colorOpen=null}
   else if(a==="focus")state.focus=state.focus===id?null:id;
   else if(a==="delw"){state.week=state.week.filter(t=>t.id!==id);menuId=null}
   else if(a==="del"){state.dump=state.dump.filter(t=>t.id!==id);menuId=null}
@@ -509,6 +542,6 @@ document.addEventListener("contextmenu",e=>{if(e.target.closest(".grip"))e.preve
 let lastPhone=matchMedia("(max-width:720px)").matches;
 addEventListener("resize",()=>{const p=matchMedia("(max-width:720px)").matches;if(p!==lastPhone){lastPhone=p;if(!drag)render()}});
 
-render();
+render();scrollToday();
 </script>
 </body></html>
