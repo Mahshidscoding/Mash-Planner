@@ -156,6 +156,37 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .mmore{font-size:.7rem;color:var(--muted)}
 @media (max-width:560px){.mcell{min-height:78px;padding:3px 2px}.mchip{font-size:.62rem;padding:0 2px}}
 
+/* Day view with time blocking */
+.dayview2{display:grid;grid-template-columns:minmax(250px,330px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:720px){.dayview2{grid-template-columns:minmax(0,1fr)}}
+.dv-side{display:grid;gap:12px;align-content:start;min-width:0}
+.dv-side .dayblk{border-radius:14px;background:var(--sunk);padding:4px 10px 6px;margin:0;border:2px solid transparent}
+.dv-side .dayblk .addline{border-bottom:none}
+.dv-side .dayblk .addline input{padding-left:2px}
+.tlhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.timeline{position:relative;cursor:copy;border-radius:6px;border:2px solid transparent;margin:-2px}
+.hr{position:absolute;left:0;right:0;height:60px;border-top:1px solid var(--rule);pointer-events:none}
+.hr::after{content:"";position:absolute;left:52px;right:0;top:30px;border-top:1px dashed var(--rule);opacity:.7}
+.hr span{position:absolute;left:0;top:-8px;font-size:.72rem;font-weight:600;color:var(--muted);background:var(--bg);padding-right:6px;font-variant-numeric:tabular-nums}
+.tl-area{position:absolute;left:52px;right:0;top:0;bottom:0}
+.blk{position:absolute;box-sizing:border-box;border-radius:8px;padding:3px 4px 6px 7px;display:flex;gap:4px;align-items:flex-start;overflow:hidden;background:var(--surface);border:1px solid var(--rule);cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;z-index:2;color:var(--fg)}
+.blk[data-c=goal]{background:var(--hl-goal);border-color:transparent}.blk[data-c=must]{background:var(--hl-must);border-color:transparent}
+.blk[data-c=job]{background:var(--hl-job);border-color:transparent}.blk[data-c=side]{background:var(--hl-side);border-color:transparent}
+.blk[data-c=prac]{background:var(--hl-prac);border-color:transparent}.blk[data-c=study]{background:var(--hl-study);border-color:transparent}
+.blk[data-c=peach]{background:var(--hl-peach);border-color:transparent}.blk[data-c=ink]{background:var(--fg);color:var(--bg);border-color:transparent}
+.blk .bt{flex:1;min-width:0;border:none;background:none;padding:0;text-align:left;color:inherit;display:grid;line-height:1.2;cursor:pointer}
+.btime{font-size:.7rem;font-weight:700;opacity:.65;font-variant-numeric:tabular-nums}
+.btxt{font-size:.88rem;font-weight:500;overflow-wrap:anywhere}
+.blk.done .btxt{text-decoration:line-through;opacity:.55}
+.blk .chk{width:20px;height:20px;border-color:currentColor;border-width:1.5px;flex:none}
+.blk .grip{padding:2px}
+.rsz{position:absolute;left:0;right:0;bottom:0;height:12px;cursor:ns-resize;touch-action:none}
+.rsz::after{content:"";position:absolute;left:50%;bottom:3px;width:26px;height:3px;border-radius:2px;background:currentColor;opacity:.35;transform:translateX(-50%)}
+.nowl{position:absolute;left:-4px;right:0;height:2px;background:var(--today);z-index:3;pointer-events:none}
+.nowl::before{content:"";position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--today)}
+.qadd{position:absolute;left:0;right:0;z-index:4}
+.qadd input{width:100%;box-sizing:border-box;font:inherit;font-size:.92rem;padding:8px 10px;border-radius:8px;border:2px solid var(--fg);background:var(--surface);color:var(--fg)}
+.blkmenu{position:absolute;left:0;right:0;z-index:5}
 /* Day view */
 .dayview{display:grid;gap:22px}
 .dayview .row{min-height:52px}
@@ -331,6 +362,7 @@ function menuHTML(t,kind){
     <div class="swatches" style="border:none;padding:0">${COLORS.map(([k,n])=>`<button class="swatch" data-c="${k}" data-a="cat" data-k="${kind}" data-id="${t.id}" aria-pressed="${c===k}" title="${n}" aria-label="${n}"></button>`).join("")}</div>
     <div class="chips">${kind==="week"?`
       <button data-a="focus" data-id="${t.id}">${state.focus===t.id?"Remove focus":"★ Make it the focus"}</button>
+      ${t.time!=null?`<button data-a="untime" data-id="${t.id}">Remove time</button>`:""}
       ${t.day!==null?`<button data-a="anyday" data-id="${t.id}">Any day this week</button>`:""}
       <button data-a="back" data-id="${t.id}">Back to brain dump</button>
       <button data-a="delw" data-id="${t.id}">Delete</button>`:`
@@ -377,12 +409,36 @@ function monthView(){
   }
   return h+`</div><p class="hint" style="margin-top:10px">Tap a day to open it. Drag from the brain dump onto any date.</p>`;
 }
+const TL_START=6*60, TL_END=24*60;
+const fmt=m=>{const h=Math.floor(m/60)%24,mm=m%60,h12=h%12||12,ap=h<12?"am":"pm";return mm?`${h12}:${String(mm).padStart(2,"0")}${ap}`:`${h12}${ap}`};
+function lanesFor(ts){const res=new Map();let group=[],gEnd=-1;
+  const flush=()=>{const lanes=[];for(const t of group){let i=lanes.findIndex(e=>e<=t.time);if(i<0){i=lanes.length;lanes.push(0)}lanes[i]=t.time+(t.dur||60);res.set(t.id,{i})}group.forEach(t=>res.get(t.id).n=lanes.length);group=[]};
+  for(const t of ts){if(group.length&&t.time>=gEnd)flush();group.push(t);gEnd=Math.max(gEnd,t.time+(t.dur||60))}if(group.length)flush();return res}
+let quick=null;
 function dayView(){
-  const d=ymd(sel), ts=byDate()[d]||[], past=isPast(d), K=wkOf(sel);
-  const anyT=state.week.filter(t=>t.wk===K&&t.day===null);
-  return `<div class="dayview narrow">
-    <div class="dayblk ${past?"past":""}" ${past?"":`data-drop="date:${d}"`}><ul class="rows">${ts.map(t=>rowHTML(t,"week")).join("")}${past?"":addLine("date:"+d,"Add a task for this day…")}${fillers(5-ts.length)}</ul></div>
-    <section class="anyblk" data-drop="any:${K}"><h3>✨ Any day this week</h3><ul class="rows">${anyT.map(t=>rowHTML(t,"week")).join("")}${addLine("any:"+K,"Add something for this week…")}</ul></section>
+  const d=ymd(sel), all=byDate()[d]||[], past=isPast(d), K=wkOf(sel);
+  const untimed=all.filter(t=>t.time==null), timed=all.filter(t=>t.time!=null).sort((a,b)=>a.time-b.time);
+  const anyT=state.week.filter(t=>t.wk===K&&t.day===null), L=lanesFor(timed);
+  let hours="";for(let m=TL_START;m<TL_END;m+=60)hours+=`<div class="hr" style="top:${m-TL_START}px"><span>${fmt(m)}</span></div>`;
+  const blocks=timed.map(t=>{const l=L.get(t.id),top=t.time-TL_START,ht=t.dur||60,f=state.focus===t.id;
+    return `<div class="blk ${t.done?"done":""}" data-c="${t.c||"plain"}" data-drag="week" data-id="${t.id}" data-a="menu" data-k="week" style="top:${top}px;height:${ht}px;left:${l.i/l.n*100}%;width:calc(${100/l.n}% - 4px)">
+      <span class="grip" aria-hidden="true">⠿</span>
+      <button class="bt" data-a="menu" data-k="week" data-id="${t.id}"><span class="btime">${fmt(t.time)} – ${fmt(t.time+ht)}</span><span class="btxt">${f?"★ ":""}${esc(t.text)}</span></button>
+      <button class="chk" data-a="check" data-id="${t.id}" aria-label="${t.done?"Mark not done":"Mark done"}">✓</button>
+      <span class="rsz" data-rsz="${t.id}" aria-label="Drag to change length"></span></div>
+      ${menuId==="week"+t.id?`<div class="blkmenu" style="top:${top+ht+4}px"><ul class="rows">${menuHTML(t,"week")}</ul></div>`:""}`}).join("");
+  const nm=now.getHours()*60+now.getMinutes();
+  const nowLine=d===TODAY&&nm>=TL_START&&nm<TL_END?`<div class="nowl" style="top:${nm-TL_START}px"></div>`:"";
+  const qa=quick&&quick.d===d?`<div class="qadd" style="top:${quick.m-TL_START}px"><input data-add="time:${d}:${quick.m}" placeholder="${fmt(quick.m)} · what will you do?" autocomplete="off" aria-label="New task at ${fmt(quick.m)}"></div>`:"";
+  return `<div class="dayview2">
+    <div class="dv-side">
+      <h3>📝 Not scheduled yet</h3>
+      <div class="dayblk" ${past?"":`data-drop="untime:${d}"`}><ul class="rows">${untimed.map(t=>rowHTML(t,"week")).join("")}${past?"":addLine("date:"+d,"+ Add a task for this day")}</ul></div>
+      <p class="hint">${past?"This day has passed.":"Drag a task onto a time, or tap an empty time to add one. Drag the bottom edge of a block to make it longer."}</p>
+      <section class="anyblk" data-drop="any:${K}"><h3>✨ Any day this week</h3><ul class="rows">${anyT.map(t=>rowHTML(t,"week")).join("")}${addLine("any:"+K,"+ Add something for this week")}</ul></section>
+    </div>
+    <div><div class="tlhead"><h3>🕒 Time blocks</h3><span class="hint">${timed.length?timed.reduce((a,t)=>a+(t.dur||60),0)/60+" h planned":""}</span></div>
+    <div class="timeline" id="tl" ${past?"":`data-drop="time:${d}" data-a="tlclick"`} style="height:${TL_END-TL_START}px">${hours}<div class="tl-area">${blocks}${nowLine}${qa}</div></div></div>
   </div>`;
 }
 
@@ -429,18 +485,22 @@ let pendingFocus=null;
 function targetToSlot(target){
   if(target.startsWith("date:")){const dt=parse(target.slice(5));return{wk:wkOf(dt),day:idxOf(dt)}}
   if(target.startsWith("any:"))return{wk:target.slice(4),day:null};
+  if(target.startsWith("untime:")||target.startsWith("time:")){const dt=parse(target.split(":")[1]);return{wk:wkOf(dt),day:idxOf(dt)}}
   return null;
 }
-function place(from,id,target){
+function place(from,id,target,pt){
   if(target==="dump"){
     if(from!=="week")return;
     const i=state.week.findIndex(t=>t.id===id);if(i<0)return;
-    const {done,day,wk,kept,...rest}=state.week.splice(i,1)[0];state.dump.unshift(rest);
+    const {done,day,wk,kept,time,dur,...rest}=state.week.splice(i,1)[0];state.dump.unshift(rest);
     if(state.focus===id)state.focus=null;
   }else{
     const s=targetToSlot(target);if(!s)return;
     if(from==="dump"){const i=state.dump.findIndex(t=>t.id===id);if(i<0)return;state.week.push({...state.dump[i],done:false,...s});state.dump.splice(i,1)}
     else{const t=state.week.find(t=>t.id===id);if(!t)return;Object.assign(t,s);delete t.kept}
+    const t=state.week.find(t=>t.id===id);
+    if(t&&target.startsWith("time:")&&pt){const tl=$("tl").getBoundingClientRect();let m=Math.round((pt.y-(pt.off||0)-tl.top)/15)*15+TL_START;t.time=Math.max(TL_START,Math.min(TL_END-15,m));t.dur=t.dur||60}
+    if(t&&(target.startsWith("untime:")||target.startsWith("any:"))){delete t.time;delete t.dur}
   }
   menuId=null;save();render();
 }
@@ -457,9 +517,11 @@ document.addEventListener("click",e=>{
   if(a==="menu"){const k=b.dataset.k+id;menuId=menuId===k?null:k;colorOpen=null;render();return}
   if(a==="colors"){const k=b.dataset.k+id;colorOpen=colorOpen===k?null:k;menuId=null;render();return}
   if(a==="close"){menuId=null;render();return}
+  if(a==="tlclick"){if(e.target.closest(".blk,.qadd,.blkmenu"))return;const tl=$("tl").getBoundingClientRect();const m=Math.min(TL_END-30,Math.floor((e.clientY-tl.top)/30)*30+TL_START);quick={d:ymd(sel),m};menuId=null;pendingFocus=`time:${quick.d}:${m}`;render();return}
+  if(a==="untime"){const t=find("week",id);delete t.time;delete t.dur;menuId=null;save();render();return}
   if(a==="up")return place("dump",id,"any:"+(view==="month"?CUR:wkOf(sel)));
   if(a==="back")return place("week",id,"dump");
-  if(a==="anyday"){const t=find("week",id);t.day=null;menuId=null}
+  if(a==="anyday"){const t=find("week",id);t.day=null;delete t.time;delete t.dur;menuId=null}
   else if(a==="check"){const t=find("week",id);t.done=!t.done;if(t.done&&state.focus===id)state.focus=null}
   else if(a==="cat"){find(b.dataset.k,id).c=b.dataset.c;colorOpen=null}
   else if(a==="focus")state.focus=state.focus===id?null:id;
@@ -479,15 +541,17 @@ document.addEventListener("keydown",e=>{
   const inp=e.target.closest&&e.target.closest("[data-add]");
   if(inp&&e.key==="Enter"){
     e.preventDefault();const v=inp.value.trim();if(!v)return;const tg=inp.dataset.add;
+    if(tg.startsWith("time:")){const [,dd,mm]=tg.split(":");const dt=parse(dd);state.week.push({id:state.next++,text:v,c:"plain",done:false,wk:wkOf(dt),day:idxOf(dt),time:+mm,dur:60});quick=null;save();render();return}
     if(tg==="dump")state.dump.push({id:state.next++,text:v,c:"plain"});
     else{const s=targetToSlot(tg);state.week.push({id:state.next++,text:v,c:"plain",done:false,...s})}
     pendingFocus=tg;save();render();return;
   }
   const ed=e.target.closest&&e.target.closest("[data-edit]");
   if(ed&&e.key==="Enter"){e.preventDefault();commitEdit(ed);menuId=null;render()}
-  if(e.key==="Escape"&&menuId){menuId=null;render()}
+  if(e.key==="Escape"&&(menuId||quick)){menuId=null;quick=null;render()}
 });
 function commitEdit(ed){const t=find(ed.dataset.edit,+ed.dataset.id);const v=ed.value.trim();if(t&&v&&v!==t.text){t.text=v;save()}}
+document.addEventListener("focusout",e=>{const q=e.target.closest&&e.target.closest(".qadd input");if(q&&!q.value.trim())setTimeout(()=>{if(quick&&!document.activeElement?.closest?.(".qadd")){quick=null;render()}},150)});
 document.addEventListener("change",e=>{const ed=e.target.closest("[data-edit]");if(ed)commitEdit(ed)});
 document.addEventListener("submit",e=>{
   e.preventDefault();
@@ -498,20 +562,23 @@ document.addEventListener("submit",e=>{
 /* ---------- Drag and drop ----------
    Touch/pen: press the ⠿ handle and drag. Mouse: drag the row from anywhere. */
 let drag=null, suppressClick=false, overEl=null, scrollTimer=null;
+let resizing=null;
 document.addEventListener("pointerdown",e=>{
   suppressClick=false;
+  const rz=e.target.closest("[data-rsz]");
+  if(rz){const t=find("week",+rz.dataset.rsz);resizing={t,el:rz.closest(".blk"),y0:e.clientY,d0:t.dur||60,pid:e.pointerId};e.preventDefault();try{rz.setPointerCapture(e.pointerId)}catch(_){}return}
   const src=e.target.closest("[data-drag]");
   if(!src||e.button>0)return;
   const onGrip=!!e.target.closest(".grip");
   if(e.target.closest(".chk,input,select"))return;
   if(e.pointerType!=="mouse"&&!onGrip)return;
-  drag={src,from:src.dataset.drag,id:+src.dataset.id,x:e.clientX,y:e.clientY,active:false,pid:e.pointerId,grip:onGrip};
+  drag={src,from:src.dataset.drag,id:+src.dataset.id,x:e.clientX,y:e.clientY,active:false,pid:e.pointerId,grip:onGrip,off:src.classList.contains("blk")?e.clientY-src.getBoundingClientRect().top:12};
   if(onGrip){e.preventDefault();try{e.target.closest(".grip").setPointerCapture(e.pointerId)}catch(_){}}
 });
 function start(x,y){
   drag.active=true;
   const g=document.createElement("div");g.className="ghost";
-  g.textContent=(drag.src.querySelector(".hl")||drag.src).textContent.trim();
+  drag.label=(drag.src.querySelector(".hl,.btxt")||drag.src).textContent.trim();g.textContent=drag.label;
   document.body.appendChild(g);drag.ghost=g;
   drag.src.classList.add("lifting");moveGhost(x,y);
 }
@@ -519,25 +586,28 @@ function moveGhost(x,y){
   drag.ghost.style.left=(x-24)+"px";drag.ghost.style.top=(y-18)+"px";
   const el=document.elementFromPoint(x,y);const tgt=el&&el.closest("[data-drop]");
   if(overEl!==tgt){overEl&&overEl.classList.remove("over");overEl=tgt;tgt&&tgt.classList.add("over")}
+  if(tgt&&tgt.dataset.drop.startsWith("time:")){const tl=tgt.getBoundingClientRect();const m=Math.max(TL_START,Math.min(TL_END-15,Math.round((y-drag.off-tl.top)/15)*15+TL_START));drag.ghost.textContent=fmt(m)+" · "+drag.label}else drag.ghost.textContent=drag.label;
   clearInterval(scrollTimer);
   const vy=y<70?-14:y>innerHeight-70?14:0;
   if(vy)scrollTimer=setInterval(()=>scrollBy(0,vy),16);
 }
 document.addEventListener("pointermove",e=>{
+  if(resizing&&e.pointerId===resizing.pid){e.preventDefault();const dur=Math.max(15,Math.round((resizing.d0+e.clientY-resizing.y0)/15)*15);resizing.dur=dur;resizing.el.style.height=dur+"px";const bt=resizing.el.querySelector(".btime");if(bt)bt.textContent=fmt(resizing.t.time)+" – "+fmt(resizing.t.time+dur);return}
   if(!drag||e.pointerId!==drag.pid)return;
   if(!drag.active){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>(drag.grip?3:6))start(e.clientX,e.clientY);return}
   e.preventDefault();moveGhost(e.clientX,e.clientY);
 },{passive:false});
-document.addEventListener("touchmove",e=>{if(drag)e.preventDefault()},{passive:false});
-function end(cancel){
+document.addEventListener("touchmove",e=>{if(drag||resizing)e.preventDefault()},{passive:false});
+function end(cancel,ev){
+  if(resizing){const r=resizing;resizing=null;suppressClick=true;setTimeout(()=>suppressClick=false,60);if(!cancel&&r.dur){r.t.dur=Math.min(r.dur,TL_END-r.t.time);save()}render();return}
   if(!drag)return;clearInterval(scrollTimer);
   const d=drag;drag=null;if(!d.active)return;
   d.ghost.remove();d.src.classList.remove("lifting");overEl&&overEl.classList.remove("over");
   const t=overEl;overEl=null;suppressClick=true;setTimeout(()=>suppressClick=false,60);
-  if(!cancel&&t)place(d.from,d.id,t.dataset.drop);
+  if(!cancel&&t)place(d.from,d.id,t.dataset.drop,ev?{y:ev.clientY,off:d.off}:null);
 }
-document.addEventListener("pointerup",()=>end(false));
-document.addEventListener("pointercancel",()=>end(true));
+document.addEventListener("pointerup",e=>end(false,e));
+document.addEventListener("pointercancel",e=>end(true,e));
 document.addEventListener("contextmenu",e=>{if(e.target.closest(".grip"))e.preventDefault()});
 let lastPhone=matchMedia("(max-width:720px)").matches;
 addEventListener("resize",()=>{const p=matchMedia("(max-width:720px)").matches;if(p!==lastPhone){lastPhone=p;if(!drag)render()}});
