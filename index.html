@@ -291,33 +291,49 @@ const SUPABASE_URL="https://bbpdjcsiwjnylqoqnnhi.supabase.co";
 const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJicGRqY3Npd2pueWxxb3FubmhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI4NTEwMDgsImV4cCI6MjEwODQyNzAwOH0.XwuG-AOivdyO6_acwj8sBUvHqF4mzO2dSNBCVHpsfnA";
 const configured=!SUPABASE_URL.startsWith("PASTE")&&window.supabase;
 const sb=configured?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
-let uid=null, writing=Promise.resolve(), pending=0, timer=null, lastJSON=JSON.stringify(state);
+let uid=null, writing=Promise.resolve(), pending=0, timer=null, lastJSON=JSON.stringify(state), syncErr="";
+// Every change is stamped, so the newer copy always wins (this device or the database).
 function save(){
+  state.savedAt=Date.now();
   lastJSON=JSON.stringify(state);
   try{localStorage.setItem(KEY,lastJSON)}catch(e){}
   if(!uid)return;
-  pending++;clearTimeout(timer);
-  timer=setTimeout(()=>{const body=JSON.parse(lastJSON);
-    writing=writing.then(async()=>{const {error}=await sb.from("planner").upsert({user_id:uid,data:body,updated_at:new Date().toISOString()});if(error)throw error;setSyncUI()})
-      .catch(()=>setSyncUI("Couldn't reach your database. Saved on this device."))
-      .finally(()=>{pending=Math.max(0,pending-1)});},600);
+  if(!timer)pending++;
+  clearTimeout(timer);
+  timer=setTimeout(flush,500);
+  setSyncUI("Saving…");
+}
+function flush(){
+  if(!timer||!uid)return;clearTimeout(timer);timer=null;
+  const body=JSON.parse(lastJSON);
+  writing=writing.then(async()=>{
+    const {error}=await sb.from("planner").upsert({user_id:uid,data:body,updated_at:new Date().toISOString()});
+    if(error)throw error;syncErr="";setSyncUI();
+  }).catch(e=>{syncErr="Couldn't save to your database ("+(e&&e.message||"no connection")+"). Your changes are kept on this device.";setSyncUI()})
+    .finally(()=>{pending=Math.max(0,pending-1)});
 }
 async function pull(){
   if(!uid||pending)return;
   const {data,error}=await sb.from("planner").select("data").eq("user_id",uid).maybeSingle();
-  if(error){setSyncUI("Couldn't reach your database. Saved on this device.");return}
-  if(!data){save();return}
+  if(error){syncErr="Couldn't reach your database ("+error.message+"). Your changes are kept on this device.";setSyncUI();return}
+  if(pending)return;
+  const local=JSON.parse(lastJSON);
+  if(!data||!data.data||(local.savedAt||0)>(data.data.savedAt||0)){ // this device is newer: send it up
+    if(!timer)pending++;timer=setTimeout(flush,0);return}
   const incoming=JSON.stringify(normalize(data.data));
-  if(incoming===lastJSON||pending)return;
+  syncErr="";setSyncUI();
+  if(incoming===lastJSON)return;
   state=JSON.parse(incoming);lastJSON=incoming;
   try{localStorage.setItem(KEY,incoming)}catch(e){}
-  if(!drag)render();
+  if(!drag&&!resizing&&!document.activeElement?.matches?.("input"))render();
 }
+addEventListener("pagehide",flush);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
 let userEmail="";
 function setSyncUI(err){
   const box=$("sync");
   if(!configured){box.innerHTML=`<span class="dotline">Saved on this device only</span>`;return}
-  if(uid){box.innerHTML=`<span class="dotline on">${err?esc(err):"Synced · "+esc(userEmail)}</span><button class="link" data-a="signout">Sign out</button>`;return}
+  if(uid){const m=err||syncErr;box.innerHTML=`<span class="dotline ${syncErr?"":"on"}">${m?esc(m):"Synced · "+esc(userEmail)}</span><button class="link" data-a="signout">Sign out</button>`;return}
   box.innerHTML=`<form id="signin" class="signin"><span class="dotline">Sign in to sync your devices</span>
     <input type="email" id="email" placeholder="you@email.com" required autocomplete="email" aria-label="Email">
     <button class="primary" type="submit">Send link</button></form>`;
