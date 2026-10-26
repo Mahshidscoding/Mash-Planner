@@ -92,6 +92,8 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 [data-c=job].cdot,[data-c=job].swatch{background:var(--hl-job)}[data-c=side].cdot,[data-c=side].swatch{background:var(--hl-side)}
 [data-c=prac].cdot,[data-c=prac].swatch{background:var(--hl-prac)}[data-c=study].cdot,[data-c=study].swatch{background:var(--hl-study)}
 [data-c=peach].cdot,[data-c=peach].swatch{background:var(--hl-peach)}[data-c=ink].cdot,[data-c=ink].swatch{background:var(--fg)}
+.footrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.themebtn{border-radius:999px;padding:6px 12px;font-size:.85rem;font-weight:600;color:var(--fg);background:var(--surface);border:1px solid var(--rule)}
 .foot{display:grid;gap:8px;border-top:1px solid var(--rule);padding-top:16px;font-size:.85rem;color:var(--muted)}
 .star{color:var(--today);margin-right:4px}
 .row.done .rt{color:var(--faint);text-decoration:line-through}
@@ -245,10 +247,21 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
     <form class="signin" id="rForm"><input id="rNew" placeholder="Add a practice or study…" autocomplete="off" aria-label="New practice"><select id="rCat" aria-label="Type"><option value="prac">Practice</option><option value="study">Study</option></select><button type="submit">Add</button></form>
   </section>
 
-  <footer class="foot narrow"><div class="sync" id="sync"></div></footer>
+  <footer class="foot narrow"><div class="footrow"><div class="sync" id="sync"></div><button class="themebtn" id="themeBtn" data-a="theme" aria-label="Switch light or dark mode"></button></div></footer>
 </div>
 
 <script>
+/* Theme: light, dark, or follow the device (default) */
+const THEME_KEY="one-week-planner-theme";
+function applyTheme(t){
+  if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);else document.documentElement.removeAttribute("data-theme");
+  const dark=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=dark?"#141413":"#f7f5f8";
+  const b=document.getElementById("themeBtn");if(b)b.textContent=dark?"☀️ Light mode":"🌙 Dark mode";
+}
+let theme="auto";try{theme=localStorage.getItem(THEME_KEY)||"auto"}catch(e){}
+applyTheme(theme);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(theme==="auto")applyTheme(theme)});
 const KEY="one-week-planner-v2", VKEY="one-week-planner-view";
 const CAT={plain:"Plain",must:"Must-do",goal:"Goal work",job:"Jobs",side:"Side project",study:"Study",prac:"Practice"};
 const COLORS=[["plain","No color"],["goal","Lavender"],["must","Rose"],["peach","Peach"],["side","Lemon"],["prac","Mint"],["job","Aqua"],["study","Sky"],["ink","Ink"]];
@@ -534,6 +547,7 @@ document.addEventListener("click",e=>{
   if(a==="togglePast"){const d=b.dataset.d;openPast.has(d)?openPast.delete(d):openPast.add(d);render();return}
   if(a==="menu"){const k=b.dataset.k+id;menuId=menuId===k?null:k;colorOpen=null;render();return}
   if(a==="colors"){const k=b.dataset.k+id;colorOpen=colorOpen===k?null:k;menuId=null;render();return}
+  if(a==="theme"){const dark=theme==="dark"||(theme!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);theme=dark?"light":"dark";try{localStorage.setItem(THEME_KEY,theme)}catch(_){}applyTheme(theme);return}
   if(a==="close"){menuId=null;render();return}
   if(a==="tlclick"){if(e.target.closest(".blk,.qadd,.blkmenu"))return;const tl=$("tl").getBoundingClientRect();const m=Math.min(TL_END-30,Math.floor((e.clientY-tl.top)/30)*30+TL_START);quick={d:ymd(sel),m};menuId=null;pendingFocus=`time:${quick.d}:${m}`;render();return}
   if(a==="untime"){const t=find("week",id);delete t.time;delete t.dur;menuId=null;save();render();return}
@@ -630,6 +644,6 @@ document.addEventListener("contextmenu",e=>{if(e.target.closest(".grip"))e.preve
 let lastPhone=matchMedia("(max-width:720px)").matches;
 addEventListener("resize",()=>{const p=matchMedia("(max-width:720px)").matches;if(p!==lastPhone){lastPhone=p;if(!drag)render()}});
 
-render();scrollToday();
+render();scrollToday();applyTheme(theme);
 </script>
 </body></html>
