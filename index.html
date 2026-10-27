@@ -301,14 +301,8 @@ const idxOf=d=>(d.getDay()+6)%7;
 const mondayOf=d=>addDays(d,-idxOf(d));
 const wkOf=d=>ymd(mondayOf(d));
 const now=new Date(), TODAY=ymd(now), CUR=wkOf(now);
-const seed={
-  goals:[{id:1,text:"A portfolio that points toward art direction"},{id:2,text:"Land a new job"}],
-  week:[{id:10,text:"Add research to the Loblaws case study",c:"must",done:false,day:null,wk:CUR},
-        {id:11,text:"Apply to 5 jobs",c:"job",done:false,day:null,wk:CUR}],
-  rhythm:[{id:20,text:"Make something",c:"prac",log:{}},{id:21,text:"Read about politics",c:"study",log:{}},{id:22,text:"Teach myself branding",c:"study",log:{}}],
-  dump:[{id:30,text:"Make current case studies better",c:"goal"},{id:31,text:"Make a branding case study as a new project",c:"goal"}],
-  focus:null,next:100
-};
+// A brand-new browser starts empty; your real planner comes from your account when you sign in.
+const seed={goals:[],week:[],rhythm:[],dump:[],focus:null,next:100};
 function normalize(s){
   s=JSON.parse(JSON.stringify(s));
   s.goals=s.goals||[];s.dump=s.dump||[];s.rhythm=s.rhythm||[];s.week=s.week||[];s.next=s.next||1000;
