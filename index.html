@@ -15,17 +15,17 @@
 :root{
   --bg:#f7f5f8; --surface:#f8f7f4; --sunk:#e7dee7; --seg:#eae5ea; --fg:#141414; --muted:#6d6b66; --faint:#a9a6a0; --rule:#d3d0c9;
   --accent:#141414; --accent-soft:#dcdad4; --today:#be509b; --today-line:#db87c0; --today-border:#eca3d9; --today-soft:#f6dcef;
-  --hl-goal:#dcd5fb; --hl-must:#f2cfd5; --hl-job:#bde9f0; --hl-side:#f8ec97; --hl-prac:#c3f0d6; --hl-study:#c7e2fa; --hl-peach:#fbd6bd;
+  --hl-goal:#dcd5fb; --hl-must:#fbcfe8; --hl-kg:#dfa7b4; --hl-job:#bde9f0; --hl-side:#f8ec97; --hl-prac:#c3f0d6; --hl-study:#c7e2fa; --hl-peach:#fbd6bd;
   --display:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif; --body:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#141413; --surface:#22221f; --sunk:#1c1c1a; --seg:#1c1c1a; --fg:#efeee9; --muted:#a3a19b; --faint:#64625d; --rule:#33322e;
   --accent:#efeee9; --accent-soft:#2c2b28; --today:#ee8acb; --today-line:#b9659f; --today-border:#8a4a78; --today-soft:#3a1f33;
-  --hl-goal:#3a3358; --hl-must:#4f2a31; --hl-job:#1f4750; --hl-side:#4b4419; --hl-prac:#1f4a33; --hl-study:#21405a; --hl-peach:#4e3122; color-scheme:dark}}
+  --hl-goal:#3a3358; --hl-must:#57284b; --hl-kg:#5c2431; --hl-job:#1f4750; --hl-side:#4b4419; --hl-prac:#1f4a33; --hl-study:#21405a; --hl-peach:#4e3122; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#141413; --surface:#22221f; --sunk:#1c1c1a; --seg:#1c1c1a; --fg:#efeee9; --muted:#a3a19b; --faint:#64625d; --rule:#33322e;
   --accent:#efeee9; --accent-soft:#2c2b28; --today:#ee8acb; --today-line:#b9659f; --today-border:#8a4a78; --today-soft:#3a1f33;
-  --hl-goal:#3a3358; --hl-must:#4f2a31; --hl-job:#1f4750; --hl-side:#4b4419; --hl-prac:#1f4a33; --hl-study:#21405a; --hl-peach:#4e3122; color-scheme:dark}
+  --hl-goal:#3a3358; --hl-must:#57284b; --hl-kg:#5c2431; --hl-job:#1f4750; --hl-side:#4b4419; --hl-prac:#1f4a33; --hl-study:#21405a; --hl-peach:#4e3122; color-scheme:dark}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.45}
 [hidden]{display:none!important}
@@ -70,6 +70,15 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .goals li::before{content:"→";color:var(--accent);font-family:var(--body)}
 .notice{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.9rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .notice span{flex:1 1 200px}
+.gate{max-width:420px;width:100%;margin:6vh auto 0;background:var(--surface);border:1px solid var(--rule);border-radius:16px;padding:22px 20px;display:grid;gap:12px;box-sizing:border-box}
+.gate p{margin:0}
+.gate form{display:grid;gap:8px}
+.gate input{font:inherit;font-size:1rem;padding:10px 12px;border-radius:9px;border:1px solid var(--rule);background:var(--bg);color:var(--fg);width:100%;box-sizing:border-box}
+.gate button.primary{padding:10px 12px;font-size:.95rem}
+.gate .msg{font-size:.88rem;color:var(--today);font-weight:600}
+.gate .msg:empty{display:none}
+.pwform{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pwform input{flex:1 1 180px;min-width:0;font:inherit;font-size:.9rem;padding:7px 10px;border-radius:8px;border:1px solid var(--rule);background:var(--surface);color:var(--fg)}
 
 /* Ruled lists */
 .rows{display:flex;flex-direction:column}
@@ -81,6 +90,8 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .hl[data-c=side]{background:var(--hl-side)}.hl[data-c=prac]{background:var(--hl-prac)}.hl[data-c=study]{background:var(--hl-study)}
 .hl[data-c=peach]{background:var(--hl-peach)}.hl[data-c=ink]{background:var(--fg);color:var(--bg)}
 .hl[data-c=plain]{padding-left:0}
+.hl[data-c=kg]{background:var(--hl-kg)}.mchip[data-c=kg]{background:var(--hl-kg)}.blk[data-c=kg]{background:var(--hl-kg);border-color:transparent}
+[data-c=kg].cdot,[data-c=kg].swatch{background:var(--hl-kg)}
 .cdot{width:14px;height:14px;flex:none;padding:0;border-radius:50%;border:1.5px solid transparent;cursor:pointer}
 .cdot[data-c=plain]{border-color:var(--faint);background:transparent}
 .cdot:hover{transform:scale(1.2)}
@@ -112,6 +123,13 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .chips{display:flex;flex-wrap:wrap;gap:5px}
 .chips button{font-size:.78rem;padding:4px 9px;border-radius:999px}
 .chips button[aria-pressed=true]{border-color:var(--fg);border-width:1.5px;font-weight:700}
+.lbls{display:flex;flex-wrap:wrap;gap:5px;padding:8px 2px 10px;border-bottom:1px solid var(--rule)}
+.menu .lbls{border:none;padding:0}
+.lbl{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px 4px 5px;font-size:.78rem;font-weight:600}
+.lbl[aria-pressed=true]{border-color:var(--fg);border-width:1.5px;font-weight:800}
+.lbl .cdot{width:13px;height:13px;pointer-events:none}
+.prio{font-size:.6em;margin-right:3px;letter-spacing:-.12em;vertical-align:.15em;white-space:nowrap}
+.plabel{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px;align-self:center}
 .chips .sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
 
 /* Week view: day boxes */
@@ -119,6 +137,11 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 .colm{flex:1 0 160px;min-width:160px;background:var(--sunk);border-radius:14px;padding:12px 10px 8px;display:flex;flex-direction:column;gap:4px;min-height:300px;border:2px solid transparent;box-sizing:border-box}
 .colm.today{background:var(--surface);border-color:var(--today-border)}
 .colm.dim{opacity:.6}
+.board.focus .colm:not(.mini){flex:1 0 132px;min-width:132px}
+.board.focus .colm.today,.board.focus .colm.wide{flex:1.7 0 230px;min-width:230px}
+.colm.slim .chead{flex-direction:column;align-items:flex-start;gap:0}
+.colm.slim .dnum{font-size:1.15rem}
+.colm.slim .row .rt{font-size:.84rem}
 .colm.mini{flex:0 0 48px;min-width:48px;padding:12px 4px;align-items:center;cursor:pointer;opacity:.55}
 .chead{display:flex;justify-content:space-between;align-items:baseline;gap:4px;padding:0 2px 7px;border-bottom:2px solid var(--fg);cursor:pointer}
 .dnum{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -216,7 +239,7 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
 <div class="wrap">
   <div class="top">
     <div class="titlebox"><span class="rel" id="rel"></span><h1 id="title">…</h1></div>
-    <div class="controls">
+    <div class="controls" id="controls">
       <div class="seg" role="group" aria-label="View">
         <button data-a="view" data-v="week">Week</button>
         <button data-a="view" data-v="month">Month</button>
@@ -227,27 +250,27 @@ details.goals ul{margin-top:8px;display:grid;gap:4px}
       <button class="round" data-a="next" aria-label="Forward">›</button>
     </div>
   </div>
-  <div class="meta">
+  <div class="meta" id="metaBar">
     <details class="goals" id="goalBox"><summary id="goalSum">⭐ Where this is going</summary><ul id="goalList"></ul></details>
   </div>
   <div id="noticeArea"></div>
 
   <main id="view"></main>
 
-  <section class="dumpblk narrow" data-drop="dump" aria-labelledby="bd">
+  <section class="dumpblk narrow" id="dumpSec" data-drop="dump" aria-labelledby="bd">
     <div class="rtop"><h2 id="bd">🧠 Brain dump</h2><span class="hint" id="bdCount"></span></div>
     <p class="hint">Everything that isn't on a day yet. Drag it onto a day when you're ready.</p>
     <ul class="rows" id="dumpList"></ul>
   </section>
 
-  <section class="rhythm narrow" aria-labelledby="rh">
+  <section class="rhythm narrow" id="rhythmSec" aria-labelledby="rh">
     <div class="rtop"><h2 id="rh">🌿 Practices &amp; studies</h2></div>
     <p class="hint">Tap a day when you did it. No target, just a record.</p>
     <ul id="rhythmList"></ul>
     <form class="signin" id="rForm"><input id="rNew" placeholder="Add a practice or study…" autocomplete="off" aria-label="New practice"><select id="rCat" aria-label="Type"><option value="prac">Practice</option><option value="study">Study</option></select><button type="submit">Add</button></form>
   </section>
 
-  <footer class="foot narrow"><div class="footrow"><div class="sync" id="sync"></div><button class="themebtn" id="themeBtn" data-a="theme" aria-label="Switch light or dark mode"></button></div></footer>
+  <footer class="foot narrow"><div class="footrow"><div class="sync" id="sync"></div><button class="themebtn" id="themeBtn" data-a="theme" aria-label="Switch light or dark mode"></button></div><div id="pwArea"></div></footer>
 </div>
 
 <script>
@@ -263,8 +286,11 @@ let theme="auto";try{theme=localStorage.getItem(THEME_KEY)||"auto"}catch(e){}
 applyTheme(theme);
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(theme==="auto")applyTheme(theme)});
 const KEY="one-week-planner-v2", VKEY="one-week-planner-view";
-const CAT={plain:"Plain",must:"Must-do",goal:"Goal work",job:"Jobs",side:"Side project",study:"Study",prac:"Practice"};
-const COLORS=[["plain","No color"],["goal","Lavender"],["must","Rose"],["peach","Peach"],["side","Lemon"],["prac","Mint"],["job","Aqua"],["study","Sky"],["ink","Ink"]];
+// Color labels. The stored keys stay the same as before so saved tasks keep their colors.
+const COLORS=[["plain","No color"],["kg","Work - KG"],["must","Work - Projects"],["goal","Personal - Study"],["prac","Self-care"],["study","Admin work"]];
+const OLDCOLORS=[["peach","Peach"],["side","Lemon"],["job","Aqua"],["ink","Ink"]]; // only shown on tasks that already use them
+const colorsFor=c=>COLORS.concat(OLDCOLORS.filter(([k])=>k===c));
+const stars=p=>p?`<span class="prio" aria-label="${p} star priority">${"⭐".repeat(p)}</span>`:"";
 const DN=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const EMO=["🌱","✏️","🌤️","📚","🎈","🌸","☕"];
 const MEMO=["⛄","💌","🌷","🌧️","🌼","☀️","🍉","🌻","🍎","🍂","🍁","❄️"];
@@ -298,7 +324,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let view="week"; try{view=localStorage.getItem(VKEY)||"week"}catch(e){}
 let sel=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-let menuId=null, colorOpen=null, openPast=new Set();
+let menuId=null, colorOpen=null, openPast=new Set(), openDay=null;
 
 /* ---------- Sync: this device first, then your Supabase database when signed in ---------- */
 // Paste your two values from Supabase → Project Settings → API.
@@ -344,24 +370,55 @@ async function pull(){
 }
 addEventListener("pagehide",flush);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")flush()});
-let userEmail="";
+let userEmail="", authKnown=!sb, loadingWeek=false, pwOpen=false, pwMsg="";
+// Signed out (with sync set up) = show nothing but the sign-in card. Saved data on this device is kept, just hidden.
+const locked=()=>!!sb&&!uid;
+const cameFromLink=/access_token|[?&]code=|type=(recovery|magiclink|signup)/.test(location.hash+location.search);
 function setSyncUI(err){
   const box=$("sync");
   if(!configured){box.innerHTML=`<span class="dotline">Saved on this device only</span>`;return}
-  if(uid){const m=err||syncErr;box.innerHTML=`<span class="dotline ${syncErr?"":"on"}">${m?esc(m):"Synced · "+esc(userEmail)}</span><button class="link" data-a="signout">Sign out</button>`;return}
-  box.innerHTML=`<form id="signin" class="signin"><span class="dotline">Sign in to sync your devices</span>
-    <input type="email" id="email" placeholder="you@email.com" required autocomplete="email" aria-label="Email">
-    <button class="primary" type="submit">Send link</button></form>`;
-  $("signin").addEventListener("submit",async e=>{
-    e.preventDefault();const em=$("email").value.trim();
-    const {error}=await sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:location.origin+location.pathname}});
-    box.innerHTML=`<span class="dotline">${error?"That didn't work: "+esc(error.message):"Check your email for a sign-in link."}</span>`;
-  });
+  if(uid){const m=err||syncErr;box.innerHTML=`<span class="dotline ${syncErr?"":"on"}">${m?esc(m):"Synced · "+esc(userEmail)}</span><button class="link" data-a="pw">${pwOpen?"Cancel":"Set password"}</button><button class="link" data-a="signout">Sign out</button>`}
+  else box.innerHTML=`<span class="dotline">Not signed in</span>`;
+  pwUI();
 }
+function pwUI(){
+  const a=$("pwArea"), key=[!!uid,pwOpen,pwMsg].join("|");
+  if(a.dataset.k===key)return; // don't wipe a password being typed
+  a.dataset.k=key;
+  if(!uid||!pwOpen){a.innerHTML=pwMsg&&uid?`<p class="hint">${esc(pwMsg)}</p>`:"";return}
+  a.innerHTML=`<p class="hint">🔑 Pick a password so you can sign in anywhere, including the home-screen app, without an email link.</p>
+    <form class="pwform" id="pwForm"><input type="password" id="pwNew" placeholder="New password (6+ characters)" minlength="6" required autocomplete="new-password" aria-label="New password"><button class="primary" type="submit">Save password</button></form>
+    ${pwMsg?`<p class="hint">${esc(pwMsg)}</p>`:""}`;
+}
+function gateHTML(){
+  if(!authKnown||loadingWeek)return `<p class="hint" style="text-align:center;margin-top:8vh">🌸 Opening your week…</p>`;
+  return `<div class="gate">
+    <h2>🌸 Welcome back</h2>
+    <p class="hint">Sign in to see your week.</p>
+    <form id="pwSignin"><input type="email" id="email" placeholder="you@email.com" required autocomplete="email" aria-label="Email">
+      <input type="password" id="pw" placeholder="Password" required autocomplete="current-password" aria-label="Password">
+      <button class="primary" type="submit">Sign in</button></form>
+    <p class="msg" id="gateMsg"></p>
+    <p class="hint">No password yet, or forgot it? <button class="link" data-a="maillink">Email me a sign-in link</button>, open it, then tap “Set password” at the bottom of the page.</p>
+  </div>`;
+}
+const gateMsg=m=>{const el=$("gateMsg");if(el)el.textContent=m};
 if(sb){
   sb.auth.onAuthStateChange((ev,session)=>{
-    const id=session?.user?.id||null;userEmail=session?.user?.email||"";
-    if(id!==uid){uid=id;setSyncUI();if(uid)pull()}
+    const id=session?.user?.id||null, first=!authKnown;
+    userEmail=session?.user?.email||"";authKnown=true;
+    if(ev==="PASSWORD_RECOVERY"||(cameFromLink&&id&&first))pwOpen=true;
+    if(id===uid){if(first)render();setSyncUI();return}
+    uid=id;menuId=null;colorOpen=null;if(!uid){pwOpen=false;pwMsg=""}
+    setSyncUI();
+    // Wait a moment so Supabase finishes signing in before we ask it for data.
+    setTimeout(()=>{
+      if(!uid){render();return}
+      if(ev==="INITIAL_SESSION"){render();scrollToday();pull();return}
+      // Fresh sign-in: show your saved week from the database, not whatever was left on this device.
+      loadingWeek=true;render();
+      Promise.race([pull(),new Promise(r=>setTimeout(r,6000))]).catch(()=>{}).finally(()=>{loadingWeek=false;render();scrollToday()});
+    },0);
   });
   document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pull()});
 }
@@ -378,19 +435,17 @@ function rowHTML(t,kind){
   return `<li class="row ${t.done?"done":""}" data-drag="${kind}" data-id="${t.id}">
     <span class="grip" aria-hidden="true">⠿</span>
     <button class="cdot" data-c="${c}" data-a="colors" data-k="${kind}" data-id="${t.id}" aria-label="Pick a color"></button>
-    <button class="rt" data-a="menu" data-k="${kind}" data-id="${t.id}">${f?'<span class="star">★</span>':""}<span class="hl" data-c="${c}">${esc(t.text)}</span></button>
+    <button class="rt" data-a="menu" data-k="${kind}" data-id="${t.id}">${f?'<span class="star">★</span>':""}${stars(t.p)}<span class="hl" data-c="${c}">${esc(t.text)}</span></button>
     ${kind==="week"?`<button class="chk" data-a="check" data-id="${t.id}" aria-label="${t.done?"Mark not done":"Mark done"}">✓</button>`:""}
   </li>${colorOpen===kind+t.id?swatchHTML(t,kind):""}${open?menuHTML(t,kind):""}`;
 }
-function swatchHTML(t,kind){
-  const c=t.c||"plain";
-  return `<li class="swatches">${COLORS.map(([k,n])=>`<button class="swatch" data-c="${k}" data-a="cat" data-k="${kind}" data-id="${t.id}" aria-pressed="${c===k}" title="${n}" aria-label="${n}"></button>`).join("")}</li>`;
-}
+const labelChips=(t,kind)=>colorsFor(t.c||"plain").map(([k,n])=>`<button class="lbl" data-a="cat" data-c="${k}" data-k="${kind}" data-id="${t.id}" aria-pressed="${(t.c||"plain")===k}"><span class="cdot" data-c="${k}"></span>${n}</button>`).join("");
+function swatchHTML(t,kind){return `<li class="lbls">${labelChips(t,kind)}</li>`}
 function menuHTML(t,kind){
-  const c=t.c||"plain";
   return `<li class="menu">
     <input id="edit-${kind}-${t.id}" data-edit="${kind}" data-id="${t.id}" value="${esc(t.text)}" aria-label="Edit task">
-    <div class="swatches" style="border:none;padding:0">${COLORS.map(([k,n])=>`<button class="swatch" data-c="${k}" data-a="cat" data-k="${kind}" data-id="${t.id}" aria-pressed="${c===k}" title="${n}" aria-label="${n}"></button>`).join("")}</div>
+    <div class="lbls">${labelChips(t,kind)}</div>
+    <div class="chips"><span class="plabel">Priority</span>${[0,1,2,3].map(p=>`<button data-a="prio" data-p="${p}" data-k="${kind}" data-id="${t.id}" aria-pressed="${(t.p||0)===p}">${p?"⭐".repeat(p):"No stars"}</button>`).join("")}</div>
     <div class="chips">${kind==="week"?`
       <button data-a="focus" data-id="${t.id}">${state.focus===t.id?"Remove focus":"★ Make it the focus"}</button>
       ${t.time!=null?`<button data-a="untime" data-id="${t.id}">Remove time</button>`:""}
@@ -408,7 +463,8 @@ const fillers=n=>Array.from({length:Math.max(0,n)},()=>`<li class="row filler"><
 /* ---------- Views ---------- */
 function weekView(){
   const mon=mondayOf(sel), K=ymd(mon), map=byDate(), cur=K===CUR;
-  let h=`<div class="board" id="board">`;
+  const focus=cur||!!openDay&&wkOf(parse(openDay))===K;
+  let h=`<div class="board ${focus?"focus":""}" id="board">`;
   for(let i=0;i<7;i++){
     const dt=addDays(mon,i), d=ymd(dt), ts=map[d]||[], past=isPast(d), today=d===TODAY;
     if(past&&cur&&!openPast.has(d)){
@@ -416,8 +472,9 @@ function weekView(){
         <div class="dots">${ts.map(t=>`<span class="dot ${t.done?"d":""}"></span>`).join("")}</div></div>`;
       continue;
     }
-    h+=`<div class="colm ${past?"dim":""} ${today?"today":""}" ${past?"":`data-drop="date:${d}"`}>
-      <div class="chead" data-a="${past&&cur?"togglePast":"goDay"}" data-d="${d}"><span class="dnum">${dt.getDate()} ${dt.toLocaleDateString(undefined,{month:"short"})}</span><span class="dwk">${EMO[i]} ${today?"Today":DN[i]}</span></div>
+    const wide=today||d===openDay, slim=focus&&!wide;
+    h+=`<div class="colm ${past?"dim":""} ${today?"today":""} ${wide&&!today?"wide":""} ${slim?"slim":""}" ${past?"":`data-drop="date:${d}"`}>
+      <div class="chead" data-a="${slim&&!past?"expand":past&&cur?"togglePast":"goDay"}" data-d="${d}" title="${slim&&!past?"Make this day bigger":"Open this day"}"><span class="dnum">${dt.getDate()} ${dt.toLocaleDateString(undefined,{month:"short"})}</span><span class="dwk">${EMO[i]} ${today?"Today":DN[i]}</span></div>
       <ul class="rows">${ts.map(t=>rowHTML(t,"week")).join("")}${past?"":addLine("date:"+d,"+ Add")}</ul>
     </div>`;
   }
@@ -454,7 +511,7 @@ function dayView(){
   const blocks=timed.map(t=>{const l=L.get(t.id),top=t.time-TL_START,ht=t.dur||60,f=state.focus===t.id;
     return `<div class="blk ${t.done?"done":""}" data-c="${t.c||"plain"}" data-drag="week" data-id="${t.id}" data-a="menu" data-k="week" style="top:${top}px;height:${ht}px;left:${l.i/l.n*100}%;width:calc(${100/l.n}% - 4px)">
       <span class="grip" aria-hidden="true">⠿</span>
-      <button class="bt" data-a="menu" data-k="week" data-id="${t.id}"><span class="btime">${fmt(t.time)} – ${fmt(t.time+ht)}</span><span class="btxt">${f?"★ ":""}${esc(t.text)}</span></button>
+      <button class="bt" data-a="menu" data-k="week" data-id="${t.id}"><span class="btime">${fmt(t.time)} – ${fmt(t.time+ht)}</span><span class="btxt">${f?"★ ":""}${stars(t.p)}${esc(t.text)}</span></button>
       <button class="chk" data-a="check" data-id="${t.id}" aria-label="${t.done?"Mark not done":"Mark done"}">✓</button>
       <span class="rsz" data-rsz="${t.id}" aria-label="Drag to change length"></span></div>
       ${menuId==="week"+t.id?`<div class="blkmenu" style="top:${top+ht+4}px"><ul class="rows">${menuHTML(t,"week")}</ul></div>`:""}`}).join("");
@@ -474,6 +531,15 @@ function dayView(){
 }
 
 function render(){
+  const lock=locked();
+  ["controls","metaBar","noticeArea","dumpSec","rhythmSec"].forEach(i=>$(i).hidden=lock);
+  if(lock){
+    const mode=!authKnown||loadingWeek?"wait":"gate";
+    $("rel").textContent="";$("title").textContent="One Week at a Time 🌸";
+    if($("view").dataset.gate!==mode){$("view").innerHTML=gateHTML();$("view").dataset.gate=mode}
+    return;
+  }
+  delete $("view").dataset.gate;
   // header
   document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===view));
   const mon=mondayOf(sel), sun=addDays(mon,6);
@@ -544,6 +610,7 @@ document.addEventListener("click",e=>{
   if(a==="today"){sel=new Date(now.getFullYear(),now.getMonth(),now.getDate());render();scrollToday();return}
   if(a==="prev"||a==="next"){const s=a==="next"?1:-1;sel=view==="month"?new Date(sel.getFullYear(),sel.getMonth()+s,1):addDays(sel,view==="week"?7*s:s);menuId=null;render();scrollToday();return}
   if(a==="goDay"){if(e.target.closest(".mchip")&&false)return;sel=parse(b.dataset.d);view="day";menuId=null;render();scrollTo({top:0});return}
+  if(a==="expand"){openDay=b.dataset.d;render();return}
   if(a==="togglePast"){const d=b.dataset.d;openPast.has(d)?openPast.delete(d):openPast.add(d);render();return}
   if(a==="menu"){const k=b.dataset.k+id;menuId=menuId===k?null:k;colorOpen=null;render();return}
   if(a==="colors"){const k=b.dataset.k+id;colorOpen=colorOpen===k?null:k;menuId=null;render();return}
@@ -556,6 +623,7 @@ document.addEventListener("click",e=>{
   if(a==="anyday"){const t=find("week",id);t.day=null;delete t.time;delete t.dur;menuId=null}
   else if(a==="check"){const t=find("week",id);t.done=!t.done;if(t.done&&state.focus===id)state.focus=null}
   else if(a==="cat"){find(b.dataset.k,id).c=b.dataset.c;colorOpen=null}
+  else if(a==="prio"){const t=find(b.dataset.k,id),p=+b.dataset.p;if(p)t.p=p;else delete t.p}
   else if(a==="focus")state.focus=state.focus===id?null:id;
   else if(a==="delw"){state.week=state.week.filter(t=>t.id!==id);menuId=null}
   else if(a==="del"){state.dump=state.dump.filter(t=>t.id!==id);menuId=null}
@@ -566,6 +634,13 @@ document.addEventListener("click",e=>{
   else if(a==="staleDump"){const s=state.week.filter(t=>t.wk<CUR&&!t.done&&!t.kept);s.forEach(t=>{const {done,day,wk,kept,...r}=t;state.dump.unshift(r)});state.week=state.week.filter(t=>!s.includes(t))}
   else if(a==="staleKeep")state.week.filter(t=>t.wk<CUR&&!t.done&&!t.kept).forEach(t=>t.kept=true);
   else if(a==="signout"){sb&&sb.auth.signOut();return}
+  else if(a==="pw"){pwOpen=!pwOpen;pwMsg="";setSyncUI();if(pwOpen)$("pwNew")?.focus();return}
+  else if(a==="maillink"){
+    const em=$("email").value.trim();if(!em){gateMsg("Type your email above first.");$("email").focus();return}
+    gateMsg("Sending…");
+    sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:location.origin+location.pathname}})
+      .then(({error})=>gateMsg(error?"That didn't work: "+error.message:"Check your email for a sign-in link. Open it, then set a password at the bottom of the page."));
+    return}
   else return;
   save();render();
 });
@@ -587,6 +662,18 @@ document.addEventListener("focusout",e=>{const q=e.target.closest&&e.target.clos
 document.addEventListener("change",e=>{const ed=e.target.closest("[data-edit]");if(ed)commitEdit(ed)});
 document.addEventListener("submit",e=>{
   e.preventDefault();
+  if(e.target.id==="pwSignin"){
+    gateMsg("Signing in…");
+    sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("pw").value}).then(({error})=>{
+      if(error)gateMsg(/invalid/i.test(error.message)?"That email and password don't match. If you haven't set a password yet, use the email link below first.":"That didn't work: "+error.message)});
+    return}
+  if(e.target.id==="pwForm"){
+    const pw=$("pwNew").value;pwMsg="Saving…";pwUI();
+    sb.auth.updateUser({password:pw}).then(({error})=>{
+      if(error)pwMsg="That didn't work: "+error.message;
+      else{pwOpen=false;pwMsg="🔑 Password saved. Use it to sign in on any device, including the home-screen app."}
+      setSyncUI()});
+    return}
   if(e.target.id==="gForm"){const v=$("gNew").value.trim();if(v){state.goals.push({id:state.next++,text:v});save();render();$("goalBox").open=true}}
   if(e.target.id==="rForm"){const v=$("rNew").value.trim();if(v){state.rhythm.push({id:state.next++,text:v,c:$("rCat").value,log:{}});save();render()}}
 });
